@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Note that some adapters may set a maximum length for the String type by default, please ensure your strings are long
+// enough when changing adapters.
+// See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  id                   Int       @id @default(autoincrement())
+  shopifySessionId     String    @unique
+  shop                 String
+  state                String
+  isOnline             Boolean
+  scope                String?
+  expires              DateTime?
+  accessToken          String
+  userId               BigInt?
+  email                String?   // Existing email field
+  locale               String?
+  collaborator         Boolean?  @default(false)
+  emailVerified        Boolean?  @default(false)
+
+  // New fields
+  name                 String?   // Shop name
+  planDisplayName      String?   // plan.displayName
+  planShopifyPlus      Boolean?  // plan.shopifyPlus
+  contactEmail         String?   // Shop contact email
+  shopId               String?   // Shopify shop ID (e.g., "123456789")
+  shopCreatedAt        DateTime? // Shop creation date
+  timezoneAbbreviation String?   // Timezone abbreviation (e.g., "EST")
+}
