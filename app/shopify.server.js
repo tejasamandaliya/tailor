@@ -1,33 +1,34 @@
-import "@shopify/shopify-app-remix/adapters/node";
+import "@shopify/shopify-app-remix/server/adapters/node";
 import {
+  shopifyApp,
   ApiVersion,
   AppDistribution,
-  shopifyApp,
 } from "@shopify/shopify-app-remix/server";
-import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
-import prisma from "./db.server";
-import { SHOP_QUERY } from "./graphql"; // Import Shop's data from graphql query after installation
+import { CustomPrismaSessionStorage } from "./session-storage";
+import { PrismaClient } from "@prisma/client";
+import { SHOP_QUERY } from "./graphql";
+
+const prisma = new PrismaClient();
+const sessionStorage = new CustomPrismaSessionStorage();
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
   apiSecretKey: process.env.SHOPIFY_API_SECRET || "",
   apiVersion: ApiVersion.January25,
-  scopes: process.env.SCOPES?.split(","),
+  scopes: process.env.SCOPES?.split(",") || ["read_products"],
   appUrl: process.env.SHOPIFY_APP_URL || "",
   authPathPrefix: "/auth",
-  sessionStorage: null, // Still used for retrieval
-  //sessionStorage: new PrismaSessionStorage(prisma), // Still used for retrieval
+  sessionStorage,
   distribution: AppDistribution.AppStore,
   future: {
     unstable_newEmbeddedAuthStrategy: true,
     removeRest: true,
   },
-  // Explicitly request an online token
   isEmbeddedApp: true,
   auth: {
     offline: {
-      accessMode: "offline", // Offline token for shop-level access
-      scopes: process.env.SCOPES?.split(",") || ["read_products", "read_shop"],
+      accessMode: "offline",
+      scopes: process.env.SCOPES?.split(",") || ["read_products"],
     },
   },
   hooks: {
@@ -39,52 +40,20 @@ const shopify = shopifyApp({
 
         console.log("Shop data from GraphQL:", shop);
 
-        const savedSession = await prisma.session.upsert({
-          where: { shopifySessionId: session.id },
-          update: {
-            shop: session.shop,
-            state: session.state,
-            isOnline: session.isOnline,
-            scope: session.scope,
-            expires: session.expires,
-            accessToken: session.accessToken,
-            email: shop.email,
-            locale: session.locale,
-            collaborator: session.collaborator,
-            emailVerified: session.emailVerified,
-            name: shop.name,
-            planDisplayName: shop.plan.displayName,
-            planShopifyPlus: shop.plan.shopifyPlus,
-            planPartnerDevelopment: shop.plan.partnerDevelopment,
-            contactEmail: shop.contactEmail,
-            shopId: shop.id.split("/").pop(),
-            createdAt: shop.createdAt ? new Date(shop.createdAt) : null,
-            timezoneAbbreviation: shop.timezoneAbbreviation,
-          },
-          create: {
-            shopifySessionId: session.id,
-            shop: session.shop,
-            state: session.state,
-            isOnline: session.isOnline,
-            scope: session.scope,
-            expires: session.expires,
-            accessToken: session.accessToken,
-            email: shop.email,
-            locale: session.locale,
-            collaborator: session.collaborator,
-            emailVerified: session.emailVerified,
-            name: shop.name,
-            planDisplayName: shop.plan.displayName,
-            planShopifyPlus: shop.plan.shopifyPlus,
-            planPartnerDevelopment: shop.plan.partnerDevelopment,
-            contactEmail: shop.contactEmail,
-            shopId: shop.id.split("/").pop(),
-            createdAt: shop.createdAt ? new Date(shop.createdAt) : null,
-            timezoneAbbreviation: shop.timezoneAbbreviation,
-          },
-        });
+        // Add shop data to the session object with validation
+        session.email = shop.email || null;
+        session.name = shop.name || null;
+        session.planDisplayName = shop.plan?.displayName || null;
+        session.planShopifyPlus = shop.plan?.shopifyPlus ?? false;
+        session.contactEmail = shop.contactEmail || null;
+        session.shopId = shop.id ? shop.id.split("/").pop() : null;
+        session.shopCreatedAt = shop.createdAt
+          ? new Date(shop.createdAt)
+          : null;
+        session.timezoneAbbreviation = shop.timezoneAbbreviation || null;
 
-        console.log("Session saved with auto-incremented ID:", savedSession);
+        await sessionStorage.storeSession(session);
+        console.log("Session saved with custom storage:", session);
       } catch (error) {
         console.error("Error in afterAuth hook:", error);
       }
@@ -102,14 +71,37 @@ export const authenticate = shopify.authenticate;
 export const unauthenticated = shopify.unauthenticated;
 export const login = shopify.login;
 export const registerWebhooks = shopify.registerWebhooks;
-export const sessionStorage = shopify.sessionStorage;
+export { sessionStorage };
 export { prisma };
 
-// Custom session retrieval function
-export async function getSession(shop) {
-  const session = await prisma.session.findFirst({
+export async function getShopifySession(shop) {
+  const sessionRecord = await prisma.session.findFirst({
     where: { shop },
-    orderBy: { id: "desc" }, // Get the latest session for the shop
+    orderBy: { id: "desc" },
   });
-  return session;
+
+  if (!sessionRecord) return undefined;
+
+  return {
+    id: sessionRecord.shopifySessionId,
+    shop: sessionRecord.shop,
+    state: sessionRecord.state,
+    isOnline: sessionRecord.isOnline,
+    scope: sessionRecord.scope,
+    expires: sessionRecord.expires,
+    accessToken: sessionRecord.accessToken,
+    userId: sessionRecord.userId?.toString(),
+    email: sessionRecord.email,
+    locale: sessionRecord.locale,
+    collaborator: sessionRecord.collaborator,
+    emailVerified: sessionRecord.emailVerified,
+    name: sessionRecord.name,
+    planDisplayName: sessionRecord.planDisplayName,
+    planShopifyPlus: sessionRecord.planShopifyPlus,
+    contactEmail: sessionRecord.contactEmail,
+    shopId: sessionRecord.shopId,
+    shopCreatedAt: sessionRecord.shopCreatedAt,
+    createdAt: sessionRecord.createdAt,
+    timezoneAbbreviation: sessionRecord.timezoneAbbreviation,
+  };
 }

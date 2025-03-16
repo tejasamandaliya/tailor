@@ -19,6 +19,7 @@ CREATE TABLE `Session` (
     `contactEmail` VARCHAR(191) NULL,
     `shopId` VARCHAR(191) NULL,
     `shopCreatedAt` DATETIME(3) NULL,
+    `createdAt` DATETIME(3) NULL DEFAULT CURRENT_TIMESTAMP(3),
     `timezoneAbbreviation` VARCHAR(191) NULL,
 
     UNIQUE INDEX `Session_shopifySessionId_key`(`shopifySessionId`),

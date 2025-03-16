@@ -3,7 +3,7 @@
 client_id = "f2e0527bab8747b427946d831c5716f8"
 name = "tailor"
 handle = "tailor-5"
-application_url = "https://sheep-payment-editors-ski.trycloudflare.com"
+application_url = "https://scales-activated-brothers-lincoln.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://sheep-payment-editors-ski.trycloudflare.com/auth/callback",
-  "https://sheep-payment-editors-ski.trycloudflare.com/auth/shopify/callback",
-  "https://sheep-payment-editors-ski.trycloudflare.com/api/auth/callback"
+  "https://scales-activated-brothers-lincoln.trycloudflare.com/auth/callback",
+  "https://scales-activated-brothers-lincoln.trycloudflare.com/auth/shopify/callback",
+  "https://scales-activated-brothers-lincoln.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

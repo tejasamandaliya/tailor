@@ -1,0 +1,14 @@
+{
+  "name": "Size Scanner",
+  "target": "theme-app-extension",
+  "capabilities": {
+    "network_access": true,
+    "block_types": ["scanner-button"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Add a button to let customers measure their size using the body scanner."
+    }
+  ]
+}

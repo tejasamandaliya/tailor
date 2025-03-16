@@ -1,0 +1,32 @@
+{{ 'styles.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'size-scanner.js' | asset_url }}" defer></script>
+
+<button class="size-scanner-button" onclick="window.createScannerModal()">
+  Measure Your Size
+</button>
+
+<style>
+  .size-scanner-button {
+    margin: 10px 0;
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .size-scanner-button:hover {
+    background-color: #2980b9;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Size Scanner Button",
+  "target": "section",
+  "settings": []
+}
+{% endschema %}

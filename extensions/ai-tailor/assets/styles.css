@@ -1,0 +1,214 @@
+/* Reset default margins and padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Modal Styling */
+.size-scanner-modal {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.size-scanner-modal-content {
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.size-scanner-modal-content h2 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #2c3e50;
+}
+
+/* Start Button Styling */
+#start-button {
+  margin: 20px auto;
+  padding: 12px 30px;
+  font-size: 1.2rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#start-button:hover {
+  background-color: #2980b9;
+}
+
+#start-button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+/* Video Container */
+#video-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  height: 667px;
+  margin: 0 auto;
+  border: 3px solid #2c3e50;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #000;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Canvas for Pose Drawing */
+#poseCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+/* Overlay Image (Outline) */
+#overlay-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("https://pluspng.com/img-png/png-human-body-outline-file-outline-body-png-500.png")
+    center center / contain no-repeat;
+  display: none; /* Hidden initially */
+  opacity: 0.5;
+  z-index: 5;
+}
+
+/* Instruction Overlay */
+#instruction-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  flex-direction: column;
+  text-align: center;
+  z-index: 20;
+  padding: 20px;
+}
+
+#instruction-overlay h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #ecf0f1;
+}
+
+#instruction-overlay p {
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+#instruction-overlay img {
+  width: 200px;
+  margin-bottom: 15px;
+}
+
+#countdown-timer {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #e74c3c;
+}
+
+/* Pose Feedback */
+#pose-feedback {
+  margin-top: 15px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #e74c3c; /* Default red */
+  min-height: 20px; /* Prevents layout shift */
+}
+
+/* Measurement Results */
+#measurement-result {
+  margin-top: 20px;
+  font-size: 1.5rem;
+  color: #27ae60;
+  display: none; /* Hidden initially */
+  background-color: #ecf0f1;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading Spinner (Optional) */
+.spinner {
+  display: none;
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  #video-container {
+    width: 100%;
+    height: auto;
+    max-width: 500px;
+    aspect-ratio: 3 / 4;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  #start-button {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+
+  #instruction-overlay h2 {
+    font-size: 1.2rem;
+  }
+
+  #instruction-overlay img {
+    width: 150px;
+  }
+}

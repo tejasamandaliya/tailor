@@ -35,5 +35,6 @@ model Session {
   contactEmail         String?   // Shop contact email
   shopId               String?   // Shopify shop ID (e.g., "123456789")
   shopCreatedAt        DateTime? // Shop creation date
+  createdAt            DateTime? @default(now()) // installation date
   timezoneAbbreviation String?   // Timezone abbreviation (e.g., "EST")
 }
