@@ -76,6 +76,11 @@ export class CustomPrismaSessionStorage {
         timezoneAbbreviation: sessionRecord.timezoneAbbreviation,
       };
 
+      // Add isActive() method to the session object
+      session.isActive = function () {
+        return this.accessToken && (!this.expires || this.expires > new Date());
+      };
+
       console.log("Loaded session:", session);
       return session;
     } catch (error) {
